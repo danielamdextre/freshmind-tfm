@@ -44,7 +44,6 @@ DIAS_POR_CLASE = {"rojo": 2, "naranja": 5, "verde": 14}
 PREGUNTA_FECHA = {"abierto": "¿Cuándo lo abriste?",
                   "cerrado": "¿Cuándo lo compraste?",
                   "descongelado": "¿Cuándo lo descongelaste?"}
-OTRO = "Otro producto (escribirlo)"
 # Streamlit >= 1.49 sustituye use_container_width por width="stretch"
 _v = tuple(int(x) for x in st.__version__.split(".")[:2])
 ANCHO = {"width": "stretch"} if _v >= (1, 49) else {"use_container_width": True}
@@ -342,24 +341,30 @@ if pagina.startswith("1"):
 
     col1, col2 = st.columns(2)
     with col1:
-        eleccion = st.selectbox("Producto", [OTRO] + CATALOGO, index=1)
-        if eleccion == OTRO:
-            texto = st.text_input("Escribe el producto", placeholder="p. ej. yogur griego de cabra")
-            reconocido = resolver_producto(texto.strip()) if texto.strip() else None
-            if reconocido:
-                st.caption(f"Lo hemos reconocido en el catálogo como **{reconocido}**.")
-                nombre_catalogo, producto = reconocido, reconocido
-                categoria = categoria_de[reconocido]
-            else:
-                nombre_catalogo, producto = None, texto.strip()
-                categoria = st.selectbox("¿Qué tipo de alimento es?", opciones["categorias"])
-                if texto.strip():
+        # Un solo campo: sugiere productos del catalogo mientras escribes y,
+        # si el tuyo no existe, lo acepta como texto libre (Streamlit >= 1.45)
+        extra = {"accept_new_options": True} if _v >= (1, 45) else {}
+        eleccion = st.selectbox("Producto", CATALOGO, index=None,
+                                placeholder="Escribe o elige un producto, p. ej. yogur griego",
+                                **extra)
+        producto, nombre_catalogo, categoria = None, None, None
+        if eleccion:
+            eleccion = eleccion.strip()
+            if eleccion in categoria_de:                  # elegido del catalogo
+                nombre_catalogo, producto = eleccion, eleccion
+                categoria = categoria_de[eleccion]
+                st.caption(f"Categoría: {categoria}")
+            else:                                         # escrito a mano
+                reconocido = resolver_producto(eleccion)
+                if reconocido:
+                    nombre_catalogo, producto = reconocido, reconocido
+                    categoria = categoria_de[reconocido]
+                    st.caption(f"Lo hemos reconocido en el catálogo como **{reconocido}**.")
+                else:
+                    producto = eleccion
+                    categoria = st.selectbox("¿Qué tipo de alimento es?", opciones["categorias"])
                     st.caption("No está en el catálogo: el modelo estimará su vida útil "
                                "a partir del nombre y el tipo de alimento.")
-        else:
-            nombre_catalogo, producto = eleccion, eleccion
-            categoria = categoria_de[eleccion]
-            st.caption(f"Categoría: {categoria}")
     with col2:
         estado = st.selectbox("¿Está abierto?", opciones["estados"], index=1)
         lugar = st.selectbox("¿Dónde lo guardas?", opciones["lugares"], index=2)
