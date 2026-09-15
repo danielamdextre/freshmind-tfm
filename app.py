@@ -60,8 +60,15 @@ def cargar_modelos():
     opciones = joblib.load("opciones_app.pkl")
     v2 = None
     if os.path.exists("modelo_v2.pkl") and os.path.exists("label_encoder_v2.pkl"):
-        v2 = {"modelo": joblib.load("modelo_v2.pkl"),
-              "le": joblib.load("label_encoder_v2.pkl")}
+        try:
+            v2 = {"modelo": joblib.load("modelo_v2.pkl"),
+                  "le": joblib.load("label_encoder_v2.pkl")}
+            # Prediccion de prueba: si el pickle no es compatible, falla aqui
+            v2["modelo"].predict(pd.DataFrame([{"nombre_es": "yogur", "categoria_es": "Lácteos y huevos",
+                                                "estado": "abierto", "lugar": "nevera", "referencia": "compra"}]))
+        except Exception as e:          # la app sigue con v1 en vez de caerse
+            v2 = None
+            st.warning(f"Modelo v2 no disponible en este entorno ({type(e).__name__}). Se usa el modelo v1.")
     return v1, v2, opciones
 
 
