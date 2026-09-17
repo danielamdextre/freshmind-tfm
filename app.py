@@ -447,16 +447,6 @@ elif pagina.startswith("2"):
             if d.button("Quitar", key=f"q_{fila['id']}", help="Eliminar sin registrar"):
                 quitar(fila["id"]); st.rerun()
 
-        st.subheader("Valor en riesgo esta semana")
-        en_riesgo = int(df["Urgencia"].isin(["rojo", "naranja", "caducado"]).sum())
-        r1, r2 = st.columns(2)
-        r1.metric("Productos que pueden acabar en la basura", en_riesgo)
-        r2.metric("Valor estimado", f"{en_riesgo * 2.5:.2f} €")
-        st.caption("Estimación orientativa con un coste medio de 2,5 € por producto. "
-                   "El ahorro real se mide en '4. Registro y datos' con lo que "
-                   "efectivamente se consume o se tira.")
-
-
 # -------------------------------------------------------- pagina 3: recetas
 elif pagina.startswith("3"):
     st.header("Cocina primero lo que caduca antes")
@@ -492,7 +482,6 @@ elif pagina.startswith("3"):
                         st.rerun()
             st.caption("Recetas de RecipeNLG (en inglés, uso académico no comercial). "
                        "En negrita, los ingredientes que ya tienes.")
-
 
 # ------------------------------------------------------- pagina 4: registro
 else:
