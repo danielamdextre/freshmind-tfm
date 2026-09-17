@@ -1,7 +1,7 @@
 # FreshMind — TFM UCM 2026
 
 Predicción de la urgencia real de consumo de alimentos y recomendación de recetas contra el desperdicio.
-Máster en Data Science, Big Data y Business Analytics (UCM). Alumna: Daniela Meléndez.
+Máster en Data Science, Big Data y Business Analytics (UCM). Alumna: Daniela Natalia  Melendez Dextre.
 
 ## Qué hace la app
 1. **Añadir productos**: producto (catálogo USDA FoodKeeper o texto libre), si está abierto, dónde se guarda,
