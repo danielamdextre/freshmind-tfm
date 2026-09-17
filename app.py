@@ -291,10 +291,21 @@ def recomendar(top=5, max_solape=0.5):
 
 
 def formatear_pasos(texto):
+    """RecipeNLG trae pasos vacios y numeracion propia dentro del texto.
+    Limpiamos para que la lista numerada de la app no salga con huecos."""
     try:
-        return ast.literal_eval(texto)
+        pasos = ast.literal_eval(texto)
     except Exception:
-        return [str(texto)]
+        pasos = [str(texto)]
+    limpios = []
+    for p in pasos:
+        p = str(p).strip()
+        p = re.sub(r"^\s*\d+[\.\)]\s*", "", p)     # "1. Poner..." -> "Poner..."
+        p = re.sub(r"\s*\d+[\.\)]\s*$", "", p)     # "Para el relleno: 1." -> "Para el relleno:"
+        p = p.strip()
+        if len(p) > 2:                              # descarta vacios y restos de numeracion
+            limpios.append(p)
+    return limpios or ["(Receta sin instrucciones detalladas en el dataset)"]
 
 
 def cocinada(receta):
