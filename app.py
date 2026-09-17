@@ -18,6 +18,7 @@ Modulo 3 (Productivizar): esta app. La despensa persiste en despensa.json y
 import ast
 import json
 import os
+import re
 import uuid
 from datetime import date, timedelta
 from difflib import get_close_matches
